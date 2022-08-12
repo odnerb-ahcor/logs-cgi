@@ -1,0 +1,88 @@
+body {
+  background-color: #171717;
+  color: #e8eaed;
+}
+
+.fundo {
+  background-color:  #202124;
+  border-radius: 10px;
+  height: 100vh;
+}
+
+.logs {
+  background-color: #171717;
+  margin: 10px;
+  border-radius: 7px;
+}
+
+.info {
+  background-color: #171717;
+  margin: 10px;
+  border-radius: 7px;
+  display: none;
+}
+
+.vazio {
+  display: flex;
+  background-color: #171717;
+  margin: 10px;
+  border-radius: 7px;
+}
+
+
+.menu {
+  border-bottom: 1px solid #3c4043; 
+  margin-bottom: 20px;
+  height: 60px;
+}
+
+.list-logs {
+  overflow: auto;
+  height: 87.5vh;
+}
+
+.log {
+  border: solid 2px #3c4043;
+  margin-bottom: 10px;
+  border-radius: 7px;
+  height: 50px;
+  cursor: pointer;
+}
+
+.nav-tab-body {
+  overflow: auto;
+  max-height: 84vh;
+  margin-top: 5px;
+}
+
+.log_format {
+  width: 99.5%;
+  color: #FFC200;
+  background-color: #171717;
+  border: 2px solid #3c4043;
+  border-radius: 5px;
+  padding: 10px;
+  resize: none;
+}
+
+
+
+::-webkit-scrollbar {
+  width: 5px;
+  /* visibility: hidden; */
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  /* visibility: hidden; */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #dc3545; 
+  /* visibility: hidden; */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #dc3545;
+  /* visibility: hidden; */
+}

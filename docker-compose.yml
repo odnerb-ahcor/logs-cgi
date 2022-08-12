@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  front:
+    build:
+      context: ./front_end
+      dockerfile: Dockerfile
+    image: html
+    container_name: fron_logs
+    ports:
+      - "80:80"
+    volumes:
+      - ./front_end/src:/usr/share/nginx/html
+  back:
+    build:
+      context: ./back_end
+      dockerfile: Dockerfile
+    image: nodejs
+    container_name: back_logs
+    restart: unless-stopped
+    ports:
+      - "5000:3000"
+    volumes:
+      - ./back_end:/home/node/app
+      - ./front_end/logs:/home/node/app/logs
+      - node_modules:/home/node/app/node_modules
+    command: /home/node/app/node_modules/.bin/nodemon src/index.js
+
+volumes:
+  node_modules:
+
+networks:
+  default:
+    name: logs-brendo
+    driver: bridge
