@@ -8,8 +8,10 @@ const baseDados = [];
 const config = { filter: false }
 
 const loadLogsAPI = () => {
+  const point = ((baseDados.length > 0) ? 'ler/' + baseDados[0].id + '/' + baseDados[0].horas : 'ler')
+
   $.ajax({
-    url: url, 
+    url: url + point, 
     success: data => {
       loadLogs(data)
     },

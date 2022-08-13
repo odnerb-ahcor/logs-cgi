@@ -1,10 +1,11 @@
 const fs = require('fs')
 const readline = require('readline')
-const { data } = require('./logs')
+const base = require('./logs')
 
 const dir = './logs/'
 
 const logs = {
+  id: 0,
   metodo: '',
   horas: '',
   sql: [],
@@ -18,9 +19,11 @@ const buscar_logs = async () => {
   for (const arq of lista) {
     if (arq === 'config.conf')
      continue
-
+    
     await ler_arquivo(arq)
-    data.push({ ...logs })
+    logs.id = base.id
+    base.id++
+    base.data.push({ ...logs })
     //remover_arquivo(arq)
     limpar()
   }
@@ -73,6 +76,7 @@ const remover_arquivo = path => {
 }
 
 const limpar = () => {
+  logs.id     = 0
   logs.metodo = ''
   logs.horas  = ''
   logs.sql    = []
@@ -81,7 +85,12 @@ const limpar = () => {
   logs.resposta   = ''
 }
 
+const retornaLogs = id => {
+  return base.data.filter(item => item.id > id)
+}
+
 module.exports = {
   buscar_logs,
-  ler_log
+  ler_log,
+  retornaLogs
 }

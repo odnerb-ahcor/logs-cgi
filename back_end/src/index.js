@@ -8,18 +8,25 @@ const db = require('./logs')
 app.use(cors())
 app.use(serve.json());
 
-app.get('/ler', (req, res) => {
-  logs.buscar_logs()
-  res.send('lido')
-})
-
-app.get('/', async (req, res) => {
+app.get('/ler/:id?/:horas?', async (req, res) => {
   await logs.buscar_logs()
-  res.json(db.data)
+
+  const { id, horas } = req.params
+  let vaidacao = false
+
+  if (!(!db.data[id])){
+    vaidacao = !(db.data[id].horas === horas)
+  }
+
+  if (!id || vaidacao)
+    res.json(db.data)
+  else
+    res.json(logs.retornaLogs(id))  
 })
 
 app.get('/apagar', (req, res) => {
   db.data.length = 0
+  db.data.id = 0
   res.send('Apagado')
 })
 

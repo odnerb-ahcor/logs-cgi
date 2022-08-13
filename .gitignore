@@ -2,3 +2,5 @@
 .env
 ...
 /back_end/node_modules
+/front_end/*
+/front_end/logs_backup
