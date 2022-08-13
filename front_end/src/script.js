@@ -55,6 +55,7 @@ const loadLogs = (api) => {
     log.sql.map((sql, i) => {
       log.sql[i] = sqlFormat(sql)
     })
+    log.requisicao = xmlFormat(log.requisicao)
     log.resposta = xmlFormat(log.resposta)
 
     log.status = 0
@@ -74,7 +75,7 @@ const drawLogs = (logs = null) => {
               `  onclick="loadInfo(${i})" > ` +
               '   <div class="row">' +
               `     <div class="col-6">${log.metodo}</div> ` +
-              '     <div class="col-6 text-center">12/08/2022 00:32</div>' +
+              `     <div class="col-6 text-center">${log.horas}</div>` +
               '   </div> ' +
               ' </div>'
 
