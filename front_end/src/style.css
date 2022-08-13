@@ -29,6 +29,97 @@ body {
   border-radius: 7px;
 }
 
+.onOff {
+  border-bottom: 1px solid #3c4043;
+  padding: 10px;
+}
+
+.col-onOff {
+  width: 85px;
+}
+
+.knobs,
+.layer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.button {
+  position: relative;
+  width: 74px;
+  height: 36px;
+  overflow: hidden;
+}
+
+.button.r,
+.button.r .layer {
+  border-radius: 100px;
+}
+
+.button.b2 {
+  border-radius: 2px;
+}
+
+.checkbox {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.knobs {
+  z-index: 2;
+}
+
+.layer {
+  width: 100%;
+  border: 2px solid #0d6efd;
+  transition: 0.3s ease all;
+  z-index: 1;
+}
+
+/* Button 1 */
+#button-1 .knobs:before {
+  content: "ON";
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 30px;
+  height: 10px;
+  color: #fff;
+  font-size: 10px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 0;
+  padding: 14px 4px;
+  background-color: #0d6efd;
+  border-radius: 50%;
+  transition: 0.3s cubic-bezier(0.18, 0.89, 0.35, 1.15) all;
+}
+
+#button-1 .checkbox:checked + .knobs:before {
+  content: "OFF";
+  left: 40px;
+  background-color: #dc3545;
+}
+
+#button-1 .checkbox:checked ~ .layer {
+  border: 2px solid #dc3545;
+}
+
+#button-1 .knobs,
+#button-1 .knobs:before,
+#button-1 .layer {
+  transition: 0.3s ease all;
+}
+
 
 .menu {
   border-bottom: 1px solid #3c4043; 
@@ -36,9 +127,11 @@ body {
   height: 60px;
 }
 
+
 .list-logs {
   overflow: auto;
-  height: 87.5vh;
+  height: 80vh;
+  margin-right: 1px;
 }
 
 .log {
@@ -47,6 +140,7 @@ body {
   border-radius: 7px;
   height: 50px;
   cursor: pointer;
+  margin-left: 3px;
 }
 
 .nav-tab-body {

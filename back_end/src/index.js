@@ -30,6 +30,13 @@ app.get('/apagar', (req, res) => {
   res.send('Apagado')
 })
 
+app.get('/log/:value?', async (req, res) => {
+
+  const { value } = req.params
+
+  res.json( await logs.ligaDesliga((!value) ? -1 : value))
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

@@ -1,11 +1,35 @@
-const copiarTexto = () => {
-  let textoCopiado = 'opas'
-  navigator.clipboard.writeText(textoCopiado)
-}
+
 
 const url = 'http://localhost:5000/'
 const baseDados = [];
 const config = { filter: false }
+
+function ativarDesativar(){
+  const check = $('#ckb-on-off')[0].checked
+
+  $.ajax({
+    url: url + 'log/' + ((check) ? 0 : 1),
+    success: data => {
+      console.log(data)
+    },
+    error: data => {
+      console.log(data)
+    }
+  })  
+}
+
+function statusLogs(){
+  $.ajax({
+    url: url + 'log/',
+    success: data => {
+      $('#ckb-on-off')[0].checked = (data === 'Off')
+    },
+    error: data => {
+      console.log(data)
+    }
+  })  
+}
+setInterval(statusLogs, 300000);
 
 const loadLogsAPI = () => {
   const point = ((baseDados.length > 0) ? 'ler/' + baseDados[0].id + '/' + baseDados[0].horas : 'ler')
@@ -138,4 +162,5 @@ const drawRes = res => {
 
 $(window).on("load", function(){
   loadLogsAPI()
+  
 });
