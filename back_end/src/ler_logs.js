@@ -18,7 +18,7 @@ const buscar_logs = async () => {
   for (const arq of lista) {
     if (arq === 'config.conf')
      continue
-     
+
     await ler_arquivo(arq)
     data.push({ ...logs })
     //remover_arquivo(arq)
@@ -30,10 +30,10 @@ const ler_log = line => {
   switch (line.substr(0, 3)) {
     case 'met':
       logs.metodo = line.substr(5)
-      break;
+      break
     case 'sql':
       logs.sql.push(line.substr(5))
-      break;
+      break
     case 'req':
       logs.requisicao = line.substr(5)
       break
@@ -42,9 +42,10 @@ const ler_log = line => {
       break
     case 'hor':
       logs.horas = line.substr(5)
+      break
     default:
       logs.outros.push(line)
-      break;
+      break
   }
 
 }
