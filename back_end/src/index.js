@@ -8,6 +8,10 @@ const db = require('./logs')
 app.use(cors())
 app.use(serve.json());
 
+app.post('/status', (req, res) => {
+  res.json(db.status)
+})
+
 app.get('/ler/:id?/:horas?', async (req, res) => {
   await logs.buscar_logs()
 
@@ -31,10 +35,11 @@ app.get('/apagar', (req, res) => {
 })
 
 app.get('/log/:value?', async (req, res) => {
-
   const { value } = req.params
+  if (value)
+    logs.ligaDesliga(value)
 
-  res.json( await logs.ligaDesliga((!value) ? -1 : value))
+  res.json((db.status == '0') ? 'Off' : 'On')
 })
 
 app.listen(port, () => {

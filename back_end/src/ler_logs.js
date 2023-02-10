@@ -90,15 +90,7 @@ const retornaLogs = id => {
 }
 
 const ligaDesliga = async value => {
-  const arq = await fs.readFileSync(dir + 'config.conf').toString('UTF8').split('\n')
-  
-  if (arq[1] !== value && value !== -1) {
-    arq[1] = value
-    const linhas = arq[0] + '\n' + arq[1]
-    fs.writeFileSync(dir + 'config.conf', linhas)
-  }
-
-  return (arq[1] === '0') ? 'Off' : 'On'
+  base.status = value
 }
 
 module.exports = {

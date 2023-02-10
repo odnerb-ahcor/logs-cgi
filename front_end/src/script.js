@@ -29,7 +29,7 @@ function statusLogs(){
     }
   })  
 }
-setInterval(statusLogs, 300000);
+setInterval(statusLogs, 60000);
 
 const loadLogsAPI = () => {
   const point = ((baseDados.length > 0) ? 'ler/' + baseDados[0].id + '/' + baseDados[0].horas : 'ler')
@@ -161,6 +161,6 @@ const drawRes = res => {
 }
 
 $(window).on("load", function(){
+  statusLogs()
   loadLogsAPI()
-  
 });
