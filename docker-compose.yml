@@ -13,23 +13,9 @@ services:
       - ./front_end/src:/usr/share/nginx/html
   back:
     build:
-      context: ./back_end
+      context: ./back_end_GO
       dockerfile: Dockerfile
-    image: nodejs
     container_name: back_logs
     restart: unless-stopped
     ports:
-      - "5000:3000"
-    volumes:
-      - ./back_end:/home/node/app
-      - ./front_end/logs:/home/node/app/logs
-      - node_modules:/home/node/app/node_modules
-    command: /home/node/app/node_modules/.bin/nodemon src/index.js
-
-volumes:
-  node_modules:
-
-networks:
-  default:
-    name: logs-brendo
-    driver: bridge
+      - "5000:5000"

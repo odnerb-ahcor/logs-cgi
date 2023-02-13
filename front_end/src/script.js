@@ -8,7 +8,7 @@ function ativarDesativar(){
   const check = $('#ckb-on-off')[0].checked
 
   $.ajax({
-    url: url + 'log/' + ((check) ? 0 : 1),
+    url: url + 'status/' + ((check) ? 0 : 1),
     success: data => {
       console.log(data)
     },
@@ -20,9 +20,9 @@ function ativarDesativar(){
 
 function statusLogs(){
   $.ajax({
-    url: url + 'log/',
+    url: url + 'status/',
     success: data => {
-      $('#ckb-on-off')[0].checked = (data === 'Off')
+      $('#ckb-on-off')[0].checked = (data == '0')
     },
     error: data => {
       console.log(data)
@@ -32,10 +32,10 @@ function statusLogs(){
 setInterval(statusLogs, 60000);
 
 const loadLogsAPI = () => {
-  const point = ((baseDados.length > 0) ? 'ler/' + baseDados[0].id + '/' + baseDados[0].horas : 'ler')
+  //const point = ((baseDados.length > 0) ? 'log/' + baseDados[0].id + '/' + baseDados[0].horas : 'log')
 
   $.ajax({
-    url: url + point, 
+    url: url + 'log/', 
     success: data => {
       loadLogs(data)
     },
@@ -78,12 +78,6 @@ const pesquisarLogs = () => {
 
 const loadLogs = (api) => {
   api.map(log => {
-    log.sql.map((sql, i) => {
-      log.sql[i] = sqlFormat(sql)
-    })
-    log.requisicao = xmlFormat(log.requisicao)
-    log.resposta = xmlFormat(log.resposta)
-
     log.status = 0
 
     baseDados.unshift(log)
@@ -98,10 +92,10 @@ const drawLogs = (logs = null) => {
 
   logs.map((log, i) => {
     htmlText += `<div class="row log ${(log.status === 0) ? "border-info" : ""} align-items-center justify-content-center"` +
-              `  onclick="loadInfo(${i})" > ` +
+              `  onclick="loadInfo(${log.Id})" > ` +
               '   <div class="row">' +
-              `     <div class="col-6">${log.metodo}</div> ` +
-              `     <div class="col-6 text-center">${log.horas}</div>` +
+              `     <div class="col-6">${log.Metodo}</div> ` +
+              `     <div class="col-6 text-center">${log.Horas}</div>` +
               '   </div> ' +
               ' </div>'
 
@@ -117,12 +111,12 @@ const drawLogs = (logs = null) => {
 }
 
 const loadInfo = index => {
-  const log = baseDados[index]
+  const log = baseDados.filter(log => log.Id == index)[0]
 
-  drawSQL(log.sql)
-  drawOut(log.outros)
-  drawReq(log.requisicao)
-  drawRes(log.resposta)
+  drawSQL(log.Sql)
+  //drawOut(log.Outros)
+  drawReq(log.Requisicao)
+  drawRes(log.Resposta)
 
   $('.info').css("display", "block")
   $('.vazio').css("display", "none")
@@ -132,7 +126,7 @@ const drawSQL = sqls => {
   let htmlText = ''
 
   sqls.map(sql => {
-    htmlText += `<textarea class="log_format" rows="${sql.line}" disabled>${sql.sql}</textarea>`
+    htmlText += `<textarea class="log_format" rows="${sql.Linhas}" disabled>${sql.Script}</textarea>`
   })
 
   $('.log-sql').html(htmlText)
@@ -149,13 +143,13 @@ const drawOut = out => {
 }
 
 const drawReq = req => {
-  const htmlText = `<textarea class="log_format" rows="${req.line}" disabled>${req.xml}</textarea>`
+  const htmlText = `<textarea class="log_format" rows="${req.Linhas}" disabled>${req.Script}</textarea>`
   
   $('.log-req').html(htmlText)
 }
 
 const drawRes = res => {
-  const htmlText = `<textarea class="log_format" rows="${res.line}" disabled>${res.xml}</textarea>`
+  const htmlText = `<textarea class="log_format" rows="${res.Linhas}" disabled>${res.Script}</textarea>`
   
   $('.log-res').html(htmlText)
 }
