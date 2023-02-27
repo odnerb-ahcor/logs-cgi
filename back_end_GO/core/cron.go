@@ -42,7 +42,7 @@ func Analytical() {
 
 func validarMetodo(metodo string) bool {
 	for _, item := range abrirValidador("config/ignoreMetodo.txt") {
-		if strings.Contains(metodo, item) {
+		if item != "" && strings.Contains(metodo, item) {
 			fmt.Println(metodo, ": Removido")
 			return false
 		}

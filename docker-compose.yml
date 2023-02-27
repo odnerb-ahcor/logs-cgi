@@ -19,3 +19,5 @@ services:
     restart: unless-stopped
     ports:
       - "5000:5000"
+    volumes:
+      - ./back_end_GO/config:/app/config
