@@ -16,7 +16,7 @@ type Log struct {
 }
 
 type base struct {
-	id     int
+	Id     int
 	Status int8
 	Logs   []Log
 	LogsB  []Log
@@ -26,17 +26,59 @@ var b *base
 
 func GetInstance() *base {
 	if b == nil {
-		b = &base{id: 0, Status: 1}
+		b = &base{Id: 0, Status: 1}
 	}
 
 	return b
 }
 
 func NewLog() *Log {
-	b.id++
-	return &Log{Id: b.id}
+	b.Id++
+	return &Log{Id: b.Id}
 }
 
 func AddFormated(str string, linhas int) *Formated {
 	return &Formated{Linhas: linhas, Script: str}
+}
+
+func (b *base) FilterLogs(filterFunc func(Log) bool) []Log {
+	var FilterSlice []Log
+	for _, element := range b.Logs {
+		if filterFunc(element) {
+			FilterSlice = append(FilterSlice, element)
+		}
+	}
+
+	return FilterSlice
+}
+
+func (b *base) FindLogs(filterFunc func(Log) bool) int {
+	index := 0
+	for i, element := range b.Logs {
+		if filterFunc(element) {
+			index = i
+		}
+	}
+
+	return index
+}
+
+func FilterSlice[T any](slice []T, filterFunc func(T) bool) []T {
+	var FilterSlice []T
+	for _, element := range slice {
+		if filterFunc(element) {
+			FilterSlice = append(FilterSlice, element)
+		}
+	}
+
+	return FilterSlice
+}
+
+func IndexFunc[E any](s []E, f func(E) bool) int {
+	for i, v := range s {
+		if f(v) {
+			return i
+		}
+	}
+	return -1
 }

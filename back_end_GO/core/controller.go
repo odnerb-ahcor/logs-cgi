@@ -22,14 +22,31 @@ func AlteraStatus(status int8) {
 	db.Status = status
 }
 
-func RetornarLog() string {
-	b, err := json.Marshal(db.Logs)
+func RetornarLog(id int, horas string) string {
+	var logs []data.Log
+	index := -1
+
+	if id > 0 && horas != "" {
+		index = db.FindLogs(func(log data.Log) bool {
+			return log.Id == id && log.Horas == horas
+		})
+	}
+
+	if index >= 0 {
+		logs = db.FilterLogs(func(log data.Log) bool {
+			return log.Id > id
+		})
+	} else {
+		logs = db.Logs
+	}
+
+	jsonLogs, err := json.Marshal(logs)
 	if err != nil {
 		fmt.Println("error:", err)
 		return ""
 	}
 
-	return string(b)
+	return string(jsonLogs)
 }
 
 func LerArquivo(body io.Reader) string {
@@ -37,7 +54,7 @@ func LerArquivo(body io.Reader) string {
 
 	err := json.NewDecoder(body).Decode(arq)
 	if err != nil {
-		fmt.Println("json erro")
+		fmt.Println("json erro: ", err)
 	}
 
 	log := data.NewLog()
@@ -49,6 +66,11 @@ func LerArquivo(body io.Reader) string {
 	db.LogsB = append(db.LogsB, *log)
 	//time.Sleep(8 * time.Second)
 	return "nome"
+}
+
+func LimparLogs() {
+	db.Logs = nil
+	db.Id = 0
 }
 
 func ler_log(linha string, log *data.Log) {

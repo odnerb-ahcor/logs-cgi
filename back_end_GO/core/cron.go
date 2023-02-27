@@ -1,8 +1,9 @@
 package core
 
 import (
-	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"strings"
 
 	"github.com/BrendoRochaDel/logs-cgi/back_end_GO/data"
 	"github.com/BrendoRochaDel/logs-cgi/back_end_GO/format"
@@ -11,33 +12,70 @@ import (
 func Analytical() {
 	for {
 		if len(db.LogsB) > 0 {
+			for i := len(db.LogsB) - 1; i >= 0; i-- {
+				if validarMetodo(db.LogsB[i].Metodo) {
+					go func(log data.Log) {
+						fmt.Println(log.Metodo, ": Iniciando tratamento")
 
-			for i, log := range db.LogsB {
-				fmt.Println("Existe log")
-				//TratarSQL
-				removerDuplicidadeSQL(&log.Sql)
-				identarSQL(&log.Sql)
+						//TratarSQL
+						fmt.Println(log.Metodo, ": Tratando sql")
+						validarSQL(&log.Sql)
+						removerDuplicidadeSQL(&log.Sql)
+						identarSQL(&log.Sql)
 
-				//TratarXML
-				formatarRequisicao(&log.Requisicao)
-				formatarResposta(&log.Resposta)
+						//TratarXML
+						fmt.Println(log.Metodo, ": Tratando xml")
+						formatarRequisicao(&log.Requisicao)
+						formatarResposta(&log.Resposta)
 
-				push(log, i)
-				fmt.Println("")
-				//imprimirStruct()
+						fmt.Println(log.Metodo, ": Salvando Alteracoes")
+						push(log)
+						fmt.Println(log.Metodo, ": Processo Concluido!")
+					}(db.LogsB[i])
+				}
+
+				remove(i)
 			}
 		}
 	}
 }
 
-func imprimirStruct() {
-	b, err := json.Marshal(db.Logs)
+func validarMetodo(metodo string) bool {
+	for _, item := range abrirValidador("config/ignoreMetodo.txt") {
+		if strings.Contains(metodo, item) {
+			fmt.Println(metodo, ": Removido")
+			return false
+		}
+	}
+
+	return true
+}
+
+func validarSQL(sqls *[]data.Formated) {
+	config := abrirValidador("config/ignoreSQL.txt")
+
+	for i := len(*sqls) - 1; i >= 0 && len(config) > 0; i-- {
+		for _, item := range config {
+			if strings.Contains((*sqls)[i].Script, item) {
+				*sqls = append((*sqls)[:i], (*sqls)[i+1:]...)
+				break
+			}
+		}
+	}
+}
+
+func abrirValidador(path string) (linhas []string) {
+	conteudo, err := ioutil.ReadFile(path)
 	if err != nil {
-		fmt.Println("error:", err)
+		fmt.Println("Erro ao ler o arquivo:", err)
 		return
 	}
 
-	fmt.Println(string(b))
+	if string(conteudo) != "" {
+		linhas = strings.Split(string(conteudo), "\n")
+	}
+
+	return
 }
 
 func removerDuplicidadeSQL(sqls *[]data.Formated) {
@@ -67,8 +105,10 @@ func formatarResposta(xml *data.Formated) {
 	xml.Script, xml.Linhas = format.XMLtoJson(xml.Script)
 }
 
-func push(log data.Log, pos int) {
+func push(log data.Log) {
 	db.Logs = append(db.Logs, log)
+}
+
+func remove(pos int) {
 	db.LogsB = append(db.LogsB[:pos], db.LogsB[pos+1:]...)
-	fmt.Println("Log Processado")
 }

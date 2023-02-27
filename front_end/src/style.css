@@ -150,6 +150,7 @@ body {
 }
 
 .log_format {
+  overflow: auto;
   width: 99.5%;
   color: #FFC200;
   background-color: #171717;

@@ -32,11 +32,18 @@ function statusLogs(){
 setInterval(statusLogs, 60000);
 
 const loadLogsAPI = () => {
-  //const point = ((baseDados.length > 0) ? 'log/' + baseDados[0].id + '/' + baseDados[0].horas : 'log')
+  let higherLog
+  if (baseDados.length > 0) {
+    higherLog = baseDados.reduce(function(prev, current) {
+      return (prev.Id > current.Id) ? prev : current
+    })
+  }
+  const point = ((higherLog) ? 'log/' + higherLog.Id + '/' + higherLog.Horas : 'log/')
 
   $.ajax({
-    url: url + 'log/', 
+    url: url + point, 
     success: data => {
+      console.log(data)
       loadLogs(data)
     },
     error: data => {
@@ -47,7 +54,7 @@ const loadLogsAPI = () => {
 
 const limparLogsAPI = () => {
   $.ajax({
-    url: url + "apagar", 
+    url: url + "limpar", 
     success: data => {
       baseDados.length = 0
       drawLogs()
@@ -66,7 +73,7 @@ const pesquisarLogs = () => {
 
   if (text.length > 0) {
     const logsFilter = baseDados.filter(log => {
-      return log.metodo.includes(text)
+      return log.Metodo.includes(text)
     })
 
     config.filter = true
@@ -112,6 +119,7 @@ const drawLogs = (logs = null) => {
 
 const loadInfo = index => {
   const log = baseDados.filter(log => log.Id == index)[0]
+  $('#titleMetodo').text(log.Metodo)
 
   drawSQL(log.Sql)
   //drawOut(log.Outros)
@@ -126,7 +134,7 @@ const drawSQL = sqls => {
   let htmlText = ''
 
   sqls.map(sql => {
-    htmlText += `<textarea class="log_format" rows="${sql.Linhas}" disabled>${sql.Script}</textarea>`
+    htmlText += `<textarea class="log_format" rows="${sql.Linhas}" wrap="off" disabled>${sql.Script}</textarea>`
   })
 
   $('.log-sql').html(htmlText)
@@ -136,20 +144,20 @@ const drawOut = out => {
   let htmlText = ''
 
   out.map(iten => {
-    htmlText += `<textarea class="log_format" rows="1" disabled>${iten}</textarea>`
+    htmlText += `<textarea class="log_format" rows="1" wrap="off" disabled>${iten}</textarea>`
   })
 
   $('.log-out').html(htmlText)
 }
 
 const drawReq = req => {
-  const htmlText = `<textarea class="log_format" rows="${req.Linhas}" disabled>${req.Script}</textarea>`
+  const htmlText = `<textarea class="log_format" rows="${req.Linhas}" wrap="off" disabled>${req.Script}</textarea>`
   
   $('.log-req').html(htmlText)
 }
 
 const drawRes = res => {
-  const htmlText = `<textarea class="log_format" rows="${res.Linhas}" disabled>${res.Script}</textarea>`
+  const htmlText = `<textarea class="log_format" rows="${res.Linhas}" wrap="off" disabled>${res.Script}</textarea>`
   
   $('.log-res').html(htmlText)
 }
