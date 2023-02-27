@@ -43,7 +43,6 @@ const loadLogsAPI = () => {
   $.ajax({
     url: url + point, 
     success: data => {
-      console.log(data)
       loadLogs(data)
     },
     error: data => {

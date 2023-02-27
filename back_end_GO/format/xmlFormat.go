@@ -68,7 +68,7 @@ func XMLtoJson(str string) (jsonIndented string, linhas int) {
 				js += "["
 			case "value":
 				lerValor = true
-			case "int", "string", "boolean":
+			case "int", "string", "boolean", "double":
 				tipo = name
 			}
 
@@ -108,7 +108,11 @@ func XMLtoJson(str string) (jsonIndented string, linhas int) {
 	js = reaplaceAllRegex(js, `,]`, "]")
 
 	var prettyJSON bytes.Buffer
-	json.Indent(&prettyJSON, []byte(js), "", "   ")
+	err := json.Indent(&prettyJSON, []byte(js), "", "   ")
+
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	jsonIndented = string(prettyJSON.Bytes())
 	linhas = strings.Count(jsonIndented, "\n") + 1
@@ -119,7 +123,7 @@ func setarValor(str, tipo string) (valor string) {
 	switch tipo {
 	case "string":
 		valor = `"` + str + `",`
-	case "int":
+	case "int", "double":
 		valor = str + ","
 	case "boolean":
 		if str == "1" {

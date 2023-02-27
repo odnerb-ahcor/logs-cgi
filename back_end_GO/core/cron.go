@@ -42,7 +42,7 @@ func Analytical() {
 
 func validarMetodo(metodo string) bool {
 	for _, item := range abrirValidador("config/ignoreMetodo.txt") {
-		if item != "" && strings.Contains(metodo, item) {
+		if len(item) > 0 && strings.Contains(metodo, item) {
 			fmt.Println(metodo, ": Removido")
 			return false
 		}
@@ -56,7 +56,7 @@ func validarSQL(sqls *[]data.Formated) {
 
 	for i := len(*sqls) - 1; i >= 0 && len(config) > 0; i-- {
 		for _, item := range config {
-			if strings.Contains((*sqls)[i].Script, item) {
+			if len(item) > 0 && strings.Contains((*sqls)[i].Script, item) {
 				*sqls = append((*sqls)[:i], (*sqls)[i+1:]...)
 				break
 			}
@@ -72,7 +72,8 @@ func abrirValidador(path string) (linhas []string) {
 	}
 
 	if string(conteudo) != "" {
-		linhas = strings.Split(string(conteudo), "\n")
+		lista := strings.ReplaceAll(string(conteudo), "\r", "")
+		linhas = strings.Split(lista, "\n")
 	}
 
 	return
