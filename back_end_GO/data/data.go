@@ -7,6 +7,7 @@ type Formated struct {
 
 type Log struct {
 	Id         int
+	NameFile   string
 	Metodo     string
 	Horas      string
 	Sql        []Formated
@@ -19,14 +20,18 @@ type base struct {
 	Id     int
 	Status int8
 	Logs   []Log
-	LogsB  []Log
+	Log    chan Log
 }
 
 var b *base
 
 func GetInstance() *base {
 	if b == nil {
-		b = &base{Id: 0, Status: 1}
+		b = &base{
+			Id:     0,
+			Status: 1,
+			Log:    make(chan Log, 5),
+		}
 	}
 
 	return b

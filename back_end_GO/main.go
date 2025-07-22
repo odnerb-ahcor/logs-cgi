@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"github.com/BrendoRochaDel/logs-cgi/back_end_GO/core"
+	"github.com/odnerb-ahcor/logs-cgi/back_end_GO/core"
 )
 
 type Pessoa struct {
@@ -13,6 +13,7 @@ type Pessoa struct {
 }
 
 func main() {
+	go core.LerArquivos()
 	go core.Analytical()
 	HandleResquest()
 }
@@ -31,7 +32,6 @@ func FilterSlice[T any](slice []T, filterFunc func(T) bool) []T {
 func HandleResquest() {
 	http.HandleFunc("/log/", core.Log)
 	http.HandleFunc("/status/", core.Status)
-	http.HandleFunc("/arquivo", core.Arquivo)
 	http.HandleFunc("/limpar", core.Limpar)
 
 	http.ListenAndServe(":5000", nil)

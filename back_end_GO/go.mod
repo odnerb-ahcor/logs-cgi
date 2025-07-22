@@ -1,3 +1,3 @@
-module github.com/BrendoRochaDel/logs-cgi/back_end_GO
+module github.com/odnerb-ahcor/logs-cgi/back_end_GO
 
-go 1.19
+go 1.23

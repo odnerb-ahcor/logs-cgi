@@ -4,11 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"encoding/xml"
-	"fmt"
 	"io"
 	"regexp"
 	"strings"
 )
+
+type RetornoXML struct {
+	Data  string
+	Lines int
+}
 
 func XMLFormat(str string) (xmlIndented string, linhas int) {
 
@@ -30,8 +34,10 @@ func XMLFormat(str string) (xmlIndented string, linhas int) {
 	return
 }
 
-func XMLtoJson(str string) (jsonIndented string, linhas int) {
+func XMLtoJson(str string) (retornoXML RetornoXML, errXML error) {
 	str = reaplaceAllRegex(str, `<\?xml.*\?>`, "")
+	str = reaplaceAllRegex(str, `"`, "'")
+	str = reaplaceAllRegex(str, `\\'`, "")
 
 	js := ""
 	lerValor := false //false = ler nome, true = ler valor
@@ -48,7 +54,7 @@ func XMLtoJson(str string) (jsonIndented string, linhas int) {
 			if err == io.EOF {
 				break
 			}
-			fmt.Println("Error getting next token:", err)
+			errXML = err
 			return
 		}
 
@@ -103,19 +109,27 @@ func XMLtoJson(str string) (jsonIndented string, linhas int) {
 		}
 	}
 
+	if js == "" {
+		return
+	}
+
 	js = reaplaceAllRegex(js, `\,$`, "")
 	js = reaplaceAllRegex(js, `,}`, "}")
 	js = reaplaceAllRegex(js, `,]`, "]")
+	js = reaplaceAllRegex(js, `{},`, "")
+	js = reaplaceAllRegex(js, `^\[],`, "")
+	js = reaplaceAllRegex(js, `\t`, "")
 
 	var prettyJSON bytes.Buffer
 	err := json.Indent(&prettyJSON, []byte(js), "", "   ")
 
 	if err != nil {
-		fmt.Println(err)
+		errXML = err
+		return
 	}
 
-	jsonIndented = string(prettyJSON.Bytes())
-	linhas = strings.Count(jsonIndented, "\n") + 1
+	retornoXML.Data = prettyJSON.String()
+	retornoXML.Lines = strings.Count(retornoXML.Data, "\n") + 1
 	return
 }
 

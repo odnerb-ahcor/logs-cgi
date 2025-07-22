@@ -28,11 +28,6 @@ func Status(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Success!")
 }
 
-func Arquivo(w http.ResponseWriter, r *http.Request) {
-	nome := LerArquivo(r.Body)
-	fmt.Fprintln(w, nome)
-}
-
 func Limpar(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	LimparLogs()

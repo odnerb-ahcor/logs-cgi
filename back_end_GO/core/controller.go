@@ -3,9 +3,10 @@ package core
 import (
 	"encoding/json"
 	"fmt"
-	"io"
+	"os"
+	"strconv"
 
-	"github.com/BrendoRochaDel/logs-cgi/back_end_GO/data"
+	"github.com/odnerb-ahcor/logs-cgi/back_end_GO/data"
 )
 
 type arquivo struct {
@@ -20,6 +21,12 @@ func RetornarStatus() int8 {
 
 func AlteraStatus(status int8) {
 	db.Status = status
+
+	err := os.WriteFile("logs/config.conf", []byte(strconv.Itoa(int(db.Status))), 0644)
+	if err != nil {
+		fmt.Println("Erro ao escrever no arquivo", err)
+		return
+	}
 }
 
 func RetornarLog(id int, horas string) string {
@@ -49,43 +56,7 @@ func RetornarLog(id int, horas string) string {
 	return string(jsonLogs)
 }
 
-func LerArquivo(body io.Reader) string {
-	arq := &arquivo{}
-
-	err := json.NewDecoder(body).Decode(arq)
-	if err != nil {
-		fmt.Println("json erro: ", err)
-	}
-
-	log := data.NewLog()
-
-	for _, linha := range arq.Linhas {
-		ler_log(linha, log)
-	}
-
-	db.LogsB = append(db.LogsB, *log)
-	//time.Sleep(8 * time.Second)
-	return "nome"
-}
-
 func LimparLogs() {
 	db.Logs = nil
 	db.Id = 0
-}
-
-func ler_log(linha string, log *data.Log) {
-	switch linha[0:3] {
-	case "met":
-		log.Metodo = linha[5:]
-	case "sql":
-		log.Sql = append(log.Sql, *data.AddFormated(linha[5:], 0))
-	case "req":
-		log.Requisicao.Script = linha[5:]
-	case "res":
-		log.Resposta.Script = linha[5:]
-	case "hor":
-		log.Horas = linha[5:]
-	default:
-		log.Outros = append(log.Outros, linha)
-	}
 }

@@ -121,7 +121,7 @@ const loadInfo = index => {
   $('#titleMetodo').text(log.Metodo)
 
   drawSQL(log.Sql)
-  //drawOut(log.Outros)
+  drawOut(log.Outros ? log.Outros : [])
   drawReq(log.Requisicao)
   drawRes(log.Resposta)
 
@@ -131,6 +131,10 @@ const loadInfo = index => {
 
 const drawSQL = sqls => {
   let htmlText = ''
+
+  if (sqls === null) {
+    return
+  }
 
   sqls.map(sql => {
     htmlText += `<textarea class="log_format" rows="${sql.Linhas}" wrap="off" disabled>${sql.Script}</textarea>`

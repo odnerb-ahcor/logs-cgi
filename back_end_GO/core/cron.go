@@ -2,39 +2,53 @@ package core
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strings"
 
-	"github.com/BrendoRochaDel/logs-cgi/back_end_GO/data"
-	"github.com/BrendoRochaDel/logs-cgi/back_end_GO/format"
+	"github.com/odnerb-ahcor/logs-cgi/back_end_GO/data"
+	"github.com/odnerb-ahcor/logs-cgi/back_end_GO/format"
 )
 
 func Analytical() {
-	for {
-		if len(db.LogsB) > 0 {
-			for i := len(db.LogsB) - 1; i >= 0; i-- {
-				if validarMetodo(db.LogsB[i].Metodo) {
-					go func(log data.Log) {
-						fmt.Println(log.Metodo, ": Iniciando tratamento")
+	for log := range db.Log {
+		if validarMetodo(log.Metodo) {
+			go func() {
+				fmt.Println(log.Metodo, ": Iniciando tratamento")
 
-						//TratarSQL
-						fmt.Println(log.Metodo, ": Tratando sql")
-						validarSQL(&log.Sql)
-						removerDuplicidadeSQL(&log.Sql)
-						identarSQL(&log.Sql)
+				//TratarSQL
+				fmt.Println(log.Metodo, ": Tratando sql")
+				validarSQL(&log.Sql)
+				removerDuplicidadeSQL(&log.Sql)
+				identarSQL(&log.Sql)
 
-						//TratarXML
-						fmt.Println(log.Metodo, ": Tratando xml")
-						formatarRequisicao(&log.Requisicao)
-						formatarResposta(&log.Resposta)
-
-						fmt.Println(log.Metodo, ": Salvando Alteracoes")
-						push(log)
-						fmt.Println(log.Metodo, ": Processo Concluido!")
-					}(db.LogsB[i])
+				//TratarXML
+				fmt.Println(log.Metodo, ": Tratando xml")
+				formatarRequisicao(&log.Requisicao)
+				err := formatarResposta(&log.Resposta)
+				if err != nil {
+					fmt.Printf("Erro ao formatar resposta %s: %s\n", log.NameFile, err)
+					os.Rename(log.NameFile, log.Metodo+".error")
+					return
 				}
 
-				remove(i)
+				fmt.Println(log.Metodo, ": Salvando Alteracoes")
+				push(log)
+				fmt.Println(log.Metodo, ": Processo Concluido!")
+
+				//Exclur arquivo
+				if log.NameFile != "" {
+					err = os.Remove(log.NameFile)
+					if err != nil {
+						fmt.Printf("Erro ao excluir arquivo %s: %s\n", log.NameFile, err)
+					}
+				}
+			}()
+		} else {
+			if log.NameFile != "" {
+				err := os.Remove(log.NameFile)
+				if err != nil {
+					fmt.Printf("Erro ao excluir arquivo  %s: %s\n", log.NameFile, err)
+				}
 			}
 		}
 	}
@@ -65,7 +79,7 @@ func validarSQL(sqls *[]data.Formated) {
 }
 
 func abrirValidador(path string) (linhas []string) {
-	conteudo, err := ioutil.ReadFile(path)
+	conteudo, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println("Erro ao ler o arquivo:", err)
 		return
@@ -102,14 +116,16 @@ func formatarRequisicao(xml *data.Formated) {
 	xml.Script, xml.Linhas = format.XMLFormat(xml.Script)
 }
 
-func formatarResposta(xml *data.Formated) {
-	xml.Script, xml.Linhas = format.XMLtoJson(xml.Script)
+func formatarResposta(xml *data.Formated) error {
+	retornoXML, err := format.XMLtoJson(xml.Script)
+	if err != nil {
+		return err
+	}
+	xml.Script = retornoXML.Data
+	xml.Linhas = retornoXML.Lines
+	return nil
 }
 
 func push(log data.Log) {
 	db.Logs = append(db.Logs, log)
-}
-
-func remove(pos int) {
-	db.LogsB = append(db.LogsB[:pos], db.LogsB[pos+1:]...)
 }
